@@ -18,7 +18,7 @@ export class UsersStore {
 
   readonly users = computed(() => this.usersResource.hasValue() ? this.usersResource.value() : []);
   readonly loading = computed(() => this.usersResource.isLoading());
-  readonly error = computed(() => this.usersResource.error());
+  readonly error = computed(() => this.usersResource.error()?.message);
   readonly hasNoData = computed(() => this.users()?.length === 0 && !this.loading() && this.error() === undefined);
   readonly shouldRetry = computed(() => !this.loading() && this.error() !== undefined);
 
