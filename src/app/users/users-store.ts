@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 
 import { UsersDataClient } from './users-data-client';
@@ -21,6 +21,24 @@ export class UsersStore {
   readonly error = computed(() => this.usersResource.error());
   readonly hasNoData = computed(() => this.users()?.length === 0 && !this.loading() && this.error() === undefined);
   readonly shouldRetry = computed(() => !this.loading() && this.error() !== undefined);
+
+  private readonly log = effect(()=> {
+    const state = {
+      params: this.params(),
+      users: {
+        data: this.users(),
+        loading: this.loading(),
+        error: this.error(),
+        hasNoData: this.hasNoData(),
+        shouldRetry: this.shouldRetry(),
+      }
+    };
+    untracked(()=> {
+      console.groupCollapsed('[UsersStore]');
+      console.log('state: ', state);
+      console.groupEnd();
+    });
+  });
 
   updateParams(params: { textSearch: string }) {
     this.params.set(params);
